@@ -12,51 +12,40 @@ P5 Identify Fraud from Enron Project
 I tested several algorithms (DecisionTreeClassifier, KNeighborsClassifier, SVC, GaussianNB, RandomForestClassifier, AdaBoostClassifier, and GradientBoostingClassifier).  I also created a VotingClassifier that used each of the tuned classifiers.  The following table summarizes the performance of each of these algorithms when run alone.
 
 <table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0
- style='border-collapse:collapse;mso-yfti-tbllook:1184;mso-padding-alt:0in 0in 0in 0in'>
- <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
-  <td width=125 valign=top style='width:93.5pt;border:solid windowtext 1.0pt;
+ style='border-collapse:collapse'>
+ <tr>
+  <td width=173 valign=top style='width:129.4pt;border:solid windowtext 1.0pt;
   padding:0in 5.4pt 0in 5.4pt'>
   <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>Algorithm</p>
+  normal'><b><u>Algorithm</u></b></p>
   </td>
   <td width=125 valign=top style='width:93.5pt;border:solid windowtext 1.0pt;
   border-left:none;padding:0in 5.4pt 0in 5.4pt'>
   <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>Parameters</p>
+  normal'><b><u>Accuracy</u></b></p>
   </td>
   <td width=125 valign=top style='width:93.5pt;border:solid windowtext 1.0pt;
   border-left:none;padding:0in 5.4pt 0in 5.4pt'>
   <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>Accuracy</p>
+  normal'><b><u>Precision</u></b></p>
   </td>
   <td width=125 valign=top style='width:93.5pt;border:solid windowtext 1.0pt;
   border-left:none;padding:0in 5.4pt 0in 5.4pt'>
   <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>Precision</p>
-  </td>
-  <td width=125 valign=top style='width:93.5pt;border:solid windowtext 1.0pt;
-  border-left:none;padding:0in 5.4pt 0in 5.4pt'>
-  <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>Recall</p>
+  normal'><b><u>Recall</u></b></p>
   </td>
  </tr>
- <tr style='mso-yfti-irow:1'>
-  <td width=125 valign=top style='width:93.5pt;border:solid windowtext 1.0pt;
+ <tr>
+  <td width=173 valign=top style='width:129.4pt;border:solid windowtext 1.0pt;
   border-top:none;padding:0in 5.4pt 0in 5.4pt'>
   <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'><span class=SpellE>DecisionTreeClassifier</span></p>
+  normal'>DecisionTreeClassifier</p>
   </td>
   <td width=125 valign=top style='width:93.5pt;border-top:none;border-left:
   none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
   padding:0in 5.4pt 0in 5.4pt'>
   <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>&nbsp;</p>
-  </td>
-  <td width=125 valign=top style='width:93.5pt;border-top:none;border-left:
-  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt'>
-  <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>&nbsp;.85</p>
+  normal'>.85</p>
   </td>
   <td width=125 valign=top style='width:93.5pt;border-top:none;border-left:
   none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
@@ -71,17 +60,11 @@ I tested several algorithms (DecisionTreeClassifier, KNeighborsClassifier, SVC, 
   normal'>.35</p>
   </td>
  </tr>
- <tr style='mso-yfti-irow:2'>
-  <td width=125 valign=top style='width:93.5pt;border:solid windowtext 1.0pt;
+ <tr>
+  <td width=173 valign=top style='width:129.4pt;border:solid windowtext 1.0pt;
   border-top:none;padding:0in 5.4pt 0in 5.4pt'>
   <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>&nbsp;<span class=SpellE>KNeighborsClassifier</span></p>
-  </td>
-  <td width=125 valign=top style='width:93.5pt;border-top:none;border-left:
-  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt'>
-  <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>&nbsp;</p>
+  normal'>KNeighborsClassifier</p>
   </td>
   <td width=125 valign=top style='width:93.5pt;border-top:none;border-left:
   none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
@@ -102,8 +85,8 @@ I tested several algorithms (DecisionTreeClassifier, KNeighborsClassifier, SVC, 
   normal'>.40</p>
   </td>
  </tr>
- <tr style='mso-yfti-irow:3'>
-  <td width=125 valign=top style='width:93.5pt;border:solid windowtext 1.0pt;
+ <tr>
+  <td width=173 valign=top style='width:129.4pt;border:solid windowtext 1.0pt;
   border-top:none;padding:0in 5.4pt 0in 5.4pt'>
   <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
   normal'>SVC&nbsp;</p>
@@ -126,24 +109,12 @@ I tested several algorithms (DecisionTreeClassifier, KNeighborsClassifier, SVC, 
   <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
   normal'>&nbsp;</p>
   </td>
-  <td width=125 valign=top style='width:93.5pt;border-top:none;border-left:
-  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt'>
-  <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>&nbsp;</p>
-  </td>
  </tr>
- <tr style='mso-yfti-irow:4'>
-  <td width=125 valign=top style='width:93.5pt;border:solid windowtext 1.0pt;
+ <tr>
+  <td width=173 valign=top style='width:129.4pt;border:solid windowtext 1.0pt;
   border-top:none;padding:0in 5.4pt 0in 5.4pt'>
   <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'><span class=SpellE>GaussianNB</span></p>
-  </td>
-  <td width=125 valign=top style='width:93.5pt;border-top:none;border-left:
-  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt'>
-  <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>&nbsp;</p>
+  normal'>GaussianNB</p>
   </td>
   <td width=125 valign=top style='width:93.5pt;border-top:none;border-left:
   none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
@@ -164,17 +135,11 @@ I tested several algorithms (DecisionTreeClassifier, KNeighborsClassifier, SVC, 
   normal'>.31</p>
   </td>
  </tr>
- <tr style='mso-yfti-irow:5'>
-  <td width=125 valign=top style='width:93.5pt;border:solid windowtext 1.0pt;
+ <tr>
+  <td width=173 valign=top style='width:129.4pt;border:solid windowtext 1.0pt;
   border-top:none;padding:0in 5.4pt 0in 5.4pt'>
   <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'><span class=SpellE>RandomForestClassifier</span></p>
-  </td>
-  <td width=125 valign=top style='width:93.5pt;border-top:none;border-left:
-  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt'>
-  <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>&nbsp;</p>
+  normal'>RandomForestClassifier</p>
   </td>
   <td width=125 valign=top style='width:93.5pt;border-top:none;border-left:
   none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
@@ -195,17 +160,11 @@ I tested several algorithms (DecisionTreeClassifier, KNeighborsClassifier, SVC, 
   normal'>.33</p>
   </td>
  </tr>
- <tr style='mso-yfti-irow:6'>
-  <td width=125 valign=top style='width:93.5pt;border:solid windowtext 1.0pt;
+ <tr>
+  <td width=173 valign=top style='width:129.4pt;border:solid windowtext 1.0pt;
   border-top:none;padding:0in 5.4pt 0in 5.4pt'>
   <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'><span class=SpellE>AdaBoostClassifier</span></p>
-  </td>
-  <td width=125 valign=top style='width:93.5pt;border-top:none;border-left:
-  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt'>
-  <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>&nbsp;</p>
+  normal'>AdaBoostClassifier</p>
   </td>
   <td width=125 valign=top style='width:93.5pt;border-top:none;border-left:
   none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
@@ -226,17 +185,12 @@ I tested several algorithms (DecisionTreeClassifier, KNeighborsClassifier, SVC, 
   normal'>.32</p>
   </td>
  </tr>
- <tr style='mso-yfti-irow:7'>
-  <td width=125 valign=top style='width:93.5pt;border-top:none;border-left:
+ <tr>
+  <td width=173 valign=top style='width:129.4pt;border-top:none;border-left:
   solid windowtext 1.0pt;border-bottom:none;border-right:solid windowtext 1.0pt;
   padding:0in 5.4pt 0in 5.4pt'>
   <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'><span class=SpellE>GradientBoostingClassifier</span></p>
-  </td>
-  <td width=125 valign=top style='width:93.5pt;border:none;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt'>
-  <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>&nbsp;</p>
+  normal'>GradientBoostingClassifier</p>
   </td>
   <td width=125 valign=top style='width:93.5pt;border:none;border-right:solid windowtext 1.0pt;
   padding:0in 5.4pt 0in 5.4pt'>
@@ -254,35 +208,29 @@ I tested several algorithms (DecisionTreeClassifier, KNeighborsClassifier, SVC, 
   normal'>.36</p>
   </td>
  </tr>
- <tr style='mso-yfti-irow:8;mso-yfti-lastrow:yes'>
-  <td width=125 valign=top style='width:93.5pt;border:solid windowtext 1.0pt;
+ <tr>
+  <td width=173 valign=top style='width:129.4pt;border:solid windowtext 1.0pt;
   border-top:none;padding:0in 5.4pt 0in 5.4pt'>
   <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'><span class=SpellE>VotingClassifier</span></p>
+  normal'>VotingClassifier</p>
   </td>
   <td width=125 valign=top style='width:93.5pt;border-top:none;border-left:
   none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
   padding:0in 5.4pt 0in 5.4pt'>
   <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'><o:p>&nbsp;</o:p></p>
+  normal'>&nbsp;</p>
   </td>
   <td width=125 valign=top style='width:93.5pt;border-top:none;border-left:
   none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
   padding:0in 5.4pt 0in 5.4pt'>
   <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'><o:p>&nbsp;</o:p></p>
+  normal'>&nbsp;</p>
   </td>
   <td width=125 valign=top style='width:93.5pt;border-top:none;border-left:
   none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
   padding:0in 5.4pt 0in 5.4pt'>
   <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'><o:p>&nbsp;</o:p></p>
-  </td>
-  <td width=125 valign=top style='width:93.5pt;border-top:none;border-left:
-  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt'>
-  <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'><o:p>&nbsp;</o:p></p>
+  normal'>&nbsp;</p>
   </td>
  </tr>
 </table>
