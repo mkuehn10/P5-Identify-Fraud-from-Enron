@@ -6,7 +6,7 @@ P5 Identify Fraud from Enron Project
 
 #### What features did you end up using in your POI identifier, and what selection process did you use to pick them? Did you have to do any scaling? Why or why not? As part of the assignment, you should attempt to engineer your own feature that does not come ready-made in the dataset -- explain what feature you tried to make, and the rationale behind it. (You do not necessarily have to use it in the final analysis, only engineer and test it.) In your feature selection step, if you used an algorithm like a decision tree, please also give the feature importances of the features that you use, and if you used an automated feature selection function like SelectKBest, please report the feature scores and reasons for your choice of parameter values.  [relevant rubric items: “create new features”, “properly scale features”, “intelligently select feature”]
 
-
+<img src="/final_project/exploratory/output_7_0.png>
 #### What algorithm did you end up using? What other one(s) did you try? How did model performance differ between algorithms?  [relevant rubric item: “pick an algorithm”]
 
 I tested several algorithms (DecisionTreeClassifier, KNeighborsClassifier, GaussianNB, RandomForestClassifier, AdaBoostClassifier, and GradientBoostingClassifier).  I also created a VotingClassifier that used each of the tuned classifiers.  The following table summarizes the performance of each of these algorithms when run alone.
@@ -99,6 +99,8 @@ Tuning the parameters of an algorithm means to make minor changes to the various
 
 #### What is validation, and what’s a classic mistake you can make if you do it wrong? How did you validate your analysis?  [relevant rubric item: “validation strategy”]
 
+Model validation is making sure the model actually works on unseen data.  This involves splitting up known data into a training set and a testing set.  A classic mistake is to use all of the data to train the model which will most likely cause overfitting.  The model will not do a good job of making predictions with unseen data since the model has not been validated against unseen data.  For feature selection and parameter tuning, a simple 70%/30% training/test split was used.  For the testing script, stratified shuffle split validation was used which basically means that the data was split into sets that contained approximately the same percentage of POIs and non-POIs that were in the original data set.  1000 folds were used to create 1000 different testing and training sets.
+
 #### Give at least 2 evaluation metrics and your average performance for each of them.  Explain an interpretation of your metrics that says something human-understandable about your algorithm’s performance. [relevant rubric item: “usage of evaluation metrics”]
 
 The evaluation metrics I used to assess performance were accuracy, precision, and recall.  The metrics are summarized in the table above.  The accuracy describes the overall percentage of predictions that were correct.  The precision identifies what percentage of the positive predictions were correct.  The recall identifies what percentage of the actual positive cases were identified. In the context of the Enron data:
@@ -136,9 +138,11 @@ The evaluation metrics I used to assess performance were accuracy, precision, an
 
 The VotingClassifier algorithm was more precise than any of the other
 algorithms meaning that there is more confidence that someone is a POI if
-the alogithm identifies that person as a POI.  The recall was similar to all
-of the individual models and is somewhat low.  Overall, the algorithm does not
+the alogithm identifies that person as a POI.  The algorithm predicted a total of 944 POIs of which 669 were actually POIs. This is where the precision of 0.71 comes from.  The recall was similar to all
+of the individual models and is somewhat low.  Out of the actual 2000 POIs in the data, the algoirthm was only able to identify 669 which is where the recall of 0.33 comes from.  Overall, the algorithm does not
 do a good job of picking out the POIs from the data.
+
+The overall accuracy of the model comes from the number of true positives and true negatives that were correctly identified.  In this case, 11394 out of the 13000 data points were correctly identified.
 
 #### References
 Information to help explain accuracy, precision, and recall taken from 
