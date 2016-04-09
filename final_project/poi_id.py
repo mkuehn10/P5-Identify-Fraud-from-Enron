@@ -167,12 +167,12 @@ elif use_classifier == 'Voting':
 	clf3 = AdaBoostClassifier(n_estimators = 20,
 							  random_state = 0,
 							  algorithm = 'SAMME.R')
-	clf4 = KNeighborsClassifier(n_neighbors = 3,
-							    algorithm = 'auto',
-								metric = 'manhattan',
-								p = 3,
-								weights = 'uniform',
-								leaf_size = 5)
+	#clf4 = KNeighborsClassifier(n_neighbors = 3,
+	#						    algorithm = 'auto',
+	#							metric = 'manhattan',
+	#							p = 3,
+	#							weights = 'uniform',
+	#							leaf_size = 5)
 	clf5 = GaussianNB()
 	clf6 = DecisionTreeClassifier(presort = True, splitter = 'best',
 								  min_samples_leaf = 1,
@@ -189,7 +189,7 @@ elif use_classifier == 'Voting':
 									  max_features = 'sqrt',
 									  max_depth = 4)
 	clf = VotingClassifier(estimators=[('rf', clf2),
-							           ('ab', clf3), ('knn', clf4),
+							           ('ab', clf3),
 									   ('gnb',clf5), ('dt', clf6),
 									   ('gb', clf7)],
 						   voting='hard')

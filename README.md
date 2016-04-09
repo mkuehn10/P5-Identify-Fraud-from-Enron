@@ -6,7 +6,7 @@ P5 Identify Fraud from Enron Project
 
 #### What features did you end up using in your POI identifier, and what selection process did you use to pick them? Did you have to do any scaling? Why or why not? As part of the assignment, you should attempt to engineer your own feature that does not come ready-made in the dataset -- explain what feature you tried to make, and the rationale behind it. (You do not necessarily have to use it in the final analysis, only engineer and test it.) In your feature selection step, if you used an algorithm like a decision tree, please also give the feature importances of the features that you use, and if you used an automated feature selection function like SelectKBest, please report the feature scores and reasons for your choice of parameter values.  [relevant rubric items: “create new features”, “properly scale features”, “intelligently select feature”]
 
-Python was used to explore the data set [here](/final_project/exploratory/README.md).  
+Python was used to explore the data set [here](/final_project/exploratory/README.md).  Exploratory box plots were created for each of the features in the data set.  The goal was to examine the distributions of each of these features for POIs and non-POIs.  Upon viewing the box plots, features were selected on the basis of whether or not there appeared to be a difference between the distributions.  The initial features that appeared to show the strongest differences were bonus, exercised_stock_options, salary, shared_receipt_with_poi, and total_stock_value.  Several other features were identified as having somewhat of a difference.  Based on these insights, different combinations of features were tested until a suitable algorithm performance (greater than 0.3 precision and recall) was obtained.  The features that were selected were bonus, exercised_stock_options, and salary.  The box plots for these features are shown below for reference.
 <table>
 <tr>
 <td><img src="/final_project/exploratory/output_7_0.png" height="300" width="300">
@@ -17,9 +17,67 @@ Python was used to explore the data set [here](/final_project/exploratory/README
 </td>
 </tr>
 </table>
+
+Two features were created from the original features: ratios of bonus to salary and from_messages to to_messages.  The thought was that perhaps POIs tended to have large bonuses compared to their salaries.  Another thought was that the ratio for from_messages to to_messages would be smaller for POIs since they may receive more emails than they send.  The two ratios created did not have a discernible impact on algorithm performance and were not included in the final features used.
+
+Scaling was not conducted for any of the features since regression, support vector machines, and clustering type algorithms were not used.
+
+The following are the feature importances for the relevant algorithms:
+<table>
+<tr>
+<td><b><u>Algorithm</u></b>
+</td>
+<td><b><u>bonus</u></b>
+</td>
+<td><b><u>exercised_stock_options</u></b>
+</td>
+<td><b><u>salary</u></b>
+</td>
+</tr>
+<tr>
+<td>DecisionTreeClassifier
+</td>
+<td>0.12
+</td>
+<td>0.42
+</td>
+<td>0.46
+</td>
+</tr>
+<tr>
+<td>RandomForestClassifier
+</td>
+<td>0.24
+</td>
+<td>0.44
+</td>
+<td>0.32
+</td>
+</tr>
+<tr>
+<td>AdaBoostClassifier
+</td>
+<td>0.15
+</td>
+<td>0.50
+</td>
+<td>0.35
+</td>
+</tr>
+<tr>
+<td>GradientBoostingClassifier
+</td>
+<td>0.26
+</td>
+<td>0.35
+</td>
+<td>0.39
+</td>
+</tr>
+</table>
 #### What algorithm did you end up using? What other one(s) did you try? How did model performance differ between algorithms?  [relevant rubric item: “pick an algorithm”]
 
-I tested several algorithms (DecisionTreeClassifier, KNeighborsClassifier, GaussianNB, RandomForestClassifier, AdaBoostClassifier, and GradientBoostingClassifier).  I also created a VotingClassifier that used each of the tuned classifiers.  The following table summarizes the performance of each of these algorithms when run alone.
+I tested several algorithms (DecisionTreeClassifier, GaussianNB, RandomForestClassifier, AdaBoostClassifier, and GradientBoostingClassifier).  I also created a VotingClassifier that used each of the tuned classifiers.  The following table summarizes the performance of each of these algorithms when run alone.
 <table>
 <tr>
 <td><b><u>Algorithm</u></b>
@@ -39,16 +97,6 @@ I tested several algorithms (DecisionTreeClassifier, KNeighborsClassifier, Gauss
 <td>0.51
 </td>
 <td>0.35
-</td>
-</tr>
-<tr>
-<td>KNeighborsClassifier
-</td>
-<td>0.88
-</td>
-<td>0.69
-</td>
-<td>0.40
 </td>
 </tr>
 <td>GaussianNB
@@ -93,11 +141,11 @@ I tested several algorithms (DecisionTreeClassifier, KNeighborsClassifier, Gauss
 <tr>
 <td>VotingClassifier
 </td>
-<td>0.88
+<td>0.87
 </td>
-<td>0.71
+<td>0.61
 </td>
-<td>0.33
+<td>0.34
 </td>
 </tr>
 </table>
@@ -131,28 +179,28 @@ The evaluation metrics I used to assess performance were accuracy, precision, an
 <tr>
 <td><b><u>Actual POI</u></b>
 </td>
-<td>True Positive: 669
+<td>True Positive: 681
 </td>
-<td>False Negative: 1331
+<td>False Negative: 1319
 </td>
 </tr>
 <tr>
 <td><b><u>Actual non-POI</u></b>
 </td>
-<td>False Positive: 275
+<td>False Positive: 427
 </td>
-<td>True Negative: 10725
+<td>True Negative: 10573
 </td>
 </tr>
 </table>
 
 The VotingClassifier algorithm was more precise than any of the other
 algorithms meaning that there is more confidence that someone is a POI if
-the alogithm identifies that person as a POI.  The algorithm predicted a total of 944 POIs of which 669 were actually POIs. This is where the precision of 0.71 comes from.  The recall was similar to all
-of the individual models and is somewhat low.  Out of the actual 2000 POIs in the data, the algoirthm was only able to identify 669 which is where the recall of 0.33 comes from.  Overall, the algorithm does not
+the alogithm identifies that person as a POI.  The algorithm predicted a total of 1108 POIs of which 681 were actually POIs. This is where the precision of 0.61 comes from.  The recall was similar to all
+of the individual models and is somewhat low.  Out of the actual 2000 POIs in the data, the algoirthm was only able to identify 681 which is where the recall of 0.34 comes from.  Overall, the algorithm does not
 do a good job of picking out the POIs from the data.
 
-The overall accuracy of the model comes from the number of true positives and true negatives that were correctly identified.  In this case, 11394 out of the 13000 data points were correctly identified.
+The overall accuracy of the model comes from the number of true positives and true negatives that were correctly identified.  In this case, 11254 out of the 13000 data points were correctly identified.
 
 #### References
 Information to help explain accuracy, precision, and recall taken from 

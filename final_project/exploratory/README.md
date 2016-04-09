@@ -4,7 +4,6 @@
 import sys
 import pickle
 import pprint
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -12,18 +11,13 @@ import seaborn as sns
 %matplotlib inline
 sys.path.append("../tools/")
 from feature_format import featureFormat, targetFeatureSplit
-#from tester import dump_classifier_and_data
 
-### Task 1: Select what features you'll use.
-### features_list is a list of strings, each of which is a feature name.
-### The first feature must be "poi".
-#features_list = ['poi','salary', 'from_messages'] # You will need to use more features
-#features_list = ['poi','salary','bonus']
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
     data_dict = pickle.load(data_file)
 data_dict.pop('TOTAL', 0)
 data_dict.pop('THE TRAVEL AGENCY IN THE PARK', 0)
+data_dict.pop('LOCKHART EUGENE E', 0)
 ```
 
 
@@ -41,14 +35,14 @@ data_dict.pop('THE TRAVEL AGENCY IN THE PARK', 0)
      'from_this_person_to_poi': 'NaN',
      'loan_advances': 'NaN',
      'long_term_incentive': 'NaN',
-     'other': 362096,
+     'other': 'NaN',
      'poi': False,
      'restricted_stock': 'NaN',
      'restricted_stock_deferred': 'NaN',
      'salary': 'NaN',
      'shared_receipt_with_poi': 'NaN',
      'to_messages': 'NaN',
-     'total_payments': 362096,
+     'total_payments': 'NaN',
      'total_stock_value': 'NaN'}
 
 
@@ -58,1516 +52,14 @@ data_dict.pop('THE TRAVEL AGENCY IN THE PARK', 0)
 # Use data_dict to create DataFrame.  
 # Transpose to make the rows represent each person in the dictionary.
 enron_df = pd.DataFrame(data_dict).T
-enron_df
 ```
-
-
-
-
-<div>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>bonus</th>
-      <th>deferral_payments</th>
-      <th>deferred_income</th>
-      <th>director_fees</th>
-      <th>email_address</th>
-      <th>exercised_stock_options</th>
-      <th>expenses</th>
-      <th>from_messages</th>
-      <th>from_poi_to_this_person</th>
-      <th>from_this_person_to_poi</th>
-      <th>...</th>
-      <th>long_term_incentive</th>
-      <th>other</th>
-      <th>poi</th>
-      <th>restricted_stock</th>
-      <th>restricted_stock_deferred</th>
-      <th>salary</th>
-      <th>shared_receipt_with_poi</th>
-      <th>to_messages</th>
-      <th>total_payments</th>
-      <th>total_stock_value</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>ALLEN PHILLIP K</th>
-      <td>4175000</td>
-      <td>2869717</td>
-      <td>-3081055</td>
-      <td>NaN</td>
-      <td>phillip.allen@enron.com</td>
-      <td>1729541</td>
-      <td>13868</td>
-      <td>2195</td>
-      <td>47</td>
-      <td>65</td>
-      <td>...</td>
-      <td>304805</td>
-      <td>152</td>
-      <td>False</td>
-      <td>126027</td>
-      <td>-126027</td>
-      <td>201955</td>
-      <td>1407</td>
-      <td>2902</td>
-      <td>4484442</td>
-      <td>1729541</td>
-    </tr>
-    <tr>
-      <th>BADUM JAMES P</th>
-      <td>NaN</td>
-      <td>178980</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>257817</td>
-      <td>3486</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>False</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>182466</td>
-      <td>257817</td>
-    </tr>
-    <tr>
-      <th>BANNANTINE JAMES M</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>-5104</td>
-      <td>NaN</td>
-      <td>james.bannantine@enron.com</td>
-      <td>4046157</td>
-      <td>56301</td>
-      <td>29</td>
-      <td>39</td>
-      <td>0</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>864523</td>
-      <td>False</td>
-      <td>1757552</td>
-      <td>-560222</td>
-      <td>477</td>
-      <td>465</td>
-      <td>566</td>
-      <td>916197</td>
-      <td>5243487</td>
-    </tr>
-    <tr>
-      <th>BAXTER JOHN C</th>
-      <td>1200000</td>
-      <td>1295738</td>
-      <td>-1386055</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>6680544</td>
-      <td>11200</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>1586055</td>
-      <td>2660303</td>
-      <td>False</td>
-      <td>3942714</td>
-      <td>NaN</td>
-      <td>267102</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>5634343</td>
-      <td>10623258</td>
-    </tr>
-    <tr>
-      <th>BAY FRANKLIN R</th>
-      <td>400000</td>
-      <td>260455</td>
-      <td>-201641</td>
-      <td>NaN</td>
-      <td>frank.bay@enron.com</td>
-      <td>NaN</td>
-      <td>129142</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>69</td>
-      <td>False</td>
-      <td>145796</td>
-      <td>-82782</td>
-      <td>239671</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>827696</td>
-      <td>63014</td>
-    </tr>
-    <tr>
-      <th>BAZELIDES PHILIP J</th>
-      <td>NaN</td>
-      <td>684694</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>1599641</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>93750</td>
-      <td>874</td>
-      <td>False</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>80818</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>860136</td>
-      <td>1599641</td>
-    </tr>
-    <tr>
-      <th>BECK SALLY W</th>
-      <td>700000</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>sally.beck@enron.com</td>
-      <td>NaN</td>
-      <td>37172</td>
-      <td>4343</td>
-      <td>144</td>
-      <td>386</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>566</td>
-      <td>False</td>
-      <td>126027</td>
-      <td>NaN</td>
-      <td>231330</td>
-      <td>2639</td>
-      <td>7315</td>
-      <td>969068</td>
-      <td>126027</td>
-    </tr>
-    <tr>
-      <th>BELDEN TIMOTHY N</th>
-      <td>5249999</td>
-      <td>2144013</td>
-      <td>-2334434</td>
-      <td>NaN</td>
-      <td>tim.belden@enron.com</td>
-      <td>953136</td>
-      <td>17355</td>
-      <td>484</td>
-      <td>228</td>
-      <td>108</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>210698</td>
-      <td>True</td>
-      <td>157569</td>
-      <td>NaN</td>
-      <td>213999</td>
-      <td>5521</td>
-      <td>7991</td>
-      <td>5501630</td>
-      <td>1110705</td>
-    </tr>
-    <tr>
-      <th>BELFER ROBERT</th>
-      <td>NaN</td>
-      <td>-102500</td>
-      <td>NaN</td>
-      <td>3285</td>
-      <td>NaN</td>
-      <td>3285</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>False</td>
-      <td>NaN</td>
-      <td>44093</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>102500</td>
-      <td>-44093</td>
-    </tr>
-    <tr>
-      <th>BERBERIAN DAVID</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>david.berberian@enron.com</td>
-      <td>1624396</td>
-      <td>11892</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>False</td>
-      <td>869220</td>
-      <td>NaN</td>
-      <td>216582</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>228474</td>
-      <td>2493616</td>
-    </tr>
-    <tr>
-      <th>BERGSIEKER RICHARD P</th>
-      <td>250000</td>
-      <td>NaN</td>
-      <td>-485813</td>
-      <td>NaN</td>
-      <td>rick.bergsieker@enron.com</td>
-      <td>NaN</td>
-      <td>59175</td>
-      <td>59</td>
-      <td>4</td>
-      <td>0</td>
-      <td>...</td>
-      <td>180250</td>
-      <td>427316</td>
-      <td>False</td>
-      <td>659249</td>
-      <td>NaN</td>
-      <td>187922</td>
-      <td>233</td>
-      <td>383</td>
-      <td>618850</td>
-      <td>659249</td>
-    </tr>
-    <tr>
-      <th>BHATNAGAR SANJAY</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>137864</td>
-      <td>sanjay.bhatnagar@enron.com</td>
-      <td>2604490</td>
-      <td>NaN</td>
-      <td>29</td>
-      <td>0</td>
-      <td>1</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>137864</td>
-      <td>False</td>
-      <td>-2604490</td>
-      <td>15456290</td>
-      <td>NaN</td>
-      <td>463</td>
-      <td>523</td>
-      <td>15456290</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>BIBI PHILIPPE A</th>
-      <td>1000000</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>philippe.bibi@enron.com</td>
-      <td>1465734</td>
-      <td>38559</td>
-      <td>40</td>
-      <td>23</td>
-      <td>8</td>
-      <td>...</td>
-      <td>369721</td>
-      <td>425688</td>
-      <td>False</td>
-      <td>378082</td>
-      <td>NaN</td>
-      <td>213625</td>
-      <td>1336</td>
-      <td>1607</td>
-      <td>2047593</td>
-      <td>1843816</td>
-    </tr>
-    <tr>
-      <th>BLACHMAN JEREMY M</th>
-      <td>850000</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>jeremy.blachman@enron.com</td>
-      <td>765313</td>
-      <td>84208</td>
-      <td>14</td>
-      <td>25</td>
-      <td>2</td>
-      <td>...</td>
-      <td>831809</td>
-      <td>272</td>
-      <td>False</td>
-      <td>189041</td>
-      <td>NaN</td>
-      <td>248546</td>
-      <td>2326</td>
-      <td>2475</td>
-      <td>2014835</td>
-      <td>954354</td>
-    </tr>
-    <tr>
-      <th>BLAKE JR. NORMAN P</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>-113784</td>
-      <td>113784</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>1279</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>False</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>1279</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>BOWEN JR RAYMOND M</th>
-      <td>1350000</td>
-      <td>NaN</td>
-      <td>-833</td>
-      <td>NaN</td>
-      <td>raymond.bowen@enron.com</td>
-      <td>NaN</td>
-      <td>65907</td>
-      <td>27</td>
-      <td>140</td>
-      <td>15</td>
-      <td>...</td>
-      <td>974293</td>
-      <td>1621</td>
-      <td>True</td>
-      <td>252055</td>
-      <td>NaN</td>
-      <td>278601</td>
-      <td>1593</td>
-      <td>1858</td>
-      <td>2669589</td>
-      <td>252055</td>
-    </tr>
-    <tr>
-      <th>BROWN MICHAEL</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>michael.brown@enron.com</td>
-      <td>NaN</td>
-      <td>49288</td>
-      <td>41</td>
-      <td>13</td>
-      <td>1</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>False</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>761</td>
-      <td>1486</td>
-      <td>49288</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>BUCHANAN HAROLD G</th>
-      <td>500000</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>john.buchanan@enron.com</td>
-      <td>825464</td>
-      <td>600</td>
-      <td>125</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>304805</td>
-      <td>1215</td>
-      <td>False</td>
-      <td>189041</td>
-      <td>NaN</td>
-      <td>248017</td>
-      <td>23</td>
-      <td>1088</td>
-      <td>1054637</td>
-      <td>1014505</td>
-    </tr>
-    <tr>
-      <th>BUTTS ROBERT H</th>
-      <td>750000</td>
-      <td>NaN</td>
-      <td>-75000</td>
-      <td>NaN</td>
-      <td>bob.butts@enron.com</td>
-      <td>NaN</td>
-      <td>9410</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>175000</td>
-      <td>150656</td>
-      <td>False</td>
-      <td>417619</td>
-      <td>NaN</td>
-      <td>261516</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>1271582</td>
-      <td>417619</td>
-    </tr>
-    <tr>
-      <th>BUY RICHARD B</th>
-      <td>900000</td>
-      <td>649584</td>
-      <td>-694862</td>
-      <td>NaN</td>
-      <td>rick.buy@enron.com</td>
-      <td>2542813</td>
-      <td>NaN</td>
-      <td>1053</td>
-      <td>156</td>
-      <td>71</td>
-      <td>...</td>
-      <td>769862</td>
-      <td>400572</td>
-      <td>False</td>
-      <td>901657</td>
-      <td>NaN</td>
-      <td>330546</td>
-      <td>2333</td>
-      <td>3523</td>
-      <td>2355702</td>
-      <td>3444470</td>
-    </tr>
-    <tr>
-      <th>CALGER CHRISTOPHER F</th>
-      <td>1250000</td>
-      <td>NaN</td>
-      <td>-262500</td>
-      <td>NaN</td>
-      <td>christopher.calger@enron.com</td>
-      <td>NaN</td>
-      <td>35818</td>
-      <td>144</td>
-      <td>199</td>
-      <td>25</td>
-      <td>...</td>
-      <td>375304</td>
-      <td>486</td>
-      <td>True</td>
-      <td>126027</td>
-      <td>NaN</td>
-      <td>240189</td>
-      <td>2188</td>
-      <td>2598</td>
-      <td>1639297</td>
-      <td>126027</td>
-    </tr>
-    <tr>
-      <th>CARTER REBECCA C</th>
-      <td>300000</td>
-      <td>NaN</td>
-      <td>-159792</td>
-      <td>NaN</td>
-      <td>rebecca.carter@enron.com</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>15</td>
-      <td>29</td>
-      <td>7</td>
-      <td>...</td>
-      <td>75000</td>
-      <td>540</td>
-      <td>False</td>
-      <td>307301</td>
-      <td>-307301</td>
-      <td>261809</td>
-      <td>196</td>
-      <td>312</td>
-      <td>477557</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>CAUSEY RICHARD A</th>
-      <td>1000000</td>
-      <td>NaN</td>
-      <td>-235000</td>
-      <td>NaN</td>
-      <td>richard.causey@enron.com</td>
-      <td>NaN</td>
-      <td>30674</td>
-      <td>49</td>
-      <td>58</td>
-      <td>12</td>
-      <td>...</td>
-      <td>350000</td>
-      <td>307895</td>
-      <td>True</td>
-      <td>2502063</td>
-      <td>NaN</td>
-      <td>415189</td>
-      <td>1585</td>
-      <td>1892</td>
-      <td>1868758</td>
-      <td>2502063</td>
-    </tr>
-    <tr>
-      <th>CHAN RONNIE</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>-98784</td>
-      <td>98784</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>False</td>
-      <td>32460</td>
-      <td>-32460</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>CHRISTODOULOU DIOMEDES</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>diomedes.christodoulou@enron.com</td>
-      <td>5127155</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>False</td>
-      <td>950730</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>6077885</td>
-    </tr>
-    <tr>
-      <th>CLINE KENNETH W</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>False</td>
-      <td>662086</td>
-      <td>-472568</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>189518</td>
-    </tr>
-    <tr>
-      <th>COLWELL WESLEY</th>
-      <td>1200000</td>
-      <td>27610</td>
-      <td>-144062</td>
-      <td>NaN</td>
-      <td>wes.colwell@enron.com</td>
-      <td>NaN</td>
-      <td>16514</td>
-      <td>40</td>
-      <td>240</td>
-      <td>11</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>101740</td>
-      <td>True</td>
-      <td>698242</td>
-      <td>NaN</td>
-      <td>288542</td>
-      <td>1132</td>
-      <td>1758</td>
-      <td>1490344</td>
-      <td>698242</td>
-    </tr>
-    <tr>
-      <th>CORDES WILLIAM R</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>bill.cordes@enron.com</td>
-      <td>651850</td>
-      <td>NaN</td>
-      <td>12</td>
-      <td>10</td>
-      <td>0</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>False</td>
-      <td>386335</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>58</td>
-      <td>764</td>
-      <td>NaN</td>
-      <td>1038185</td>
-    </tr>
-    <tr>
-      <th>COX DAVID</th>
-      <td>800000</td>
-      <td>NaN</td>
-      <td>-41250</td>
-      <td>NaN</td>
-      <td>chip.cox@enron.com</td>
-      <td>117551</td>
-      <td>27861</td>
-      <td>33</td>
-      <td>0</td>
-      <td>4</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>494</td>
-      <td>False</td>
-      <td>378082</td>
-      <td>NaN</td>
-      <td>314288</td>
-      <td>71</td>
-      <td>102</td>
-      <td>1101393</td>
-      <td>495633</td>
-    </tr>
-    <tr>
-      <th>CUMBERLAND MICHAEL S</th>
-      <td>325000</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>22344</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>275000</td>
-      <td>713</td>
-      <td>False</td>
-      <td>207940</td>
-      <td>NaN</td>
-      <td>184899</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>807956</td>
-      <td>207940</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>SAVAGE FRANK</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>-121284</td>
-      <td>125034</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>False</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>3750</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>SCRIMSHAW MATTHEW</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>matthew.scrimshaw@enron.com</td>
-      <td>759557</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>False</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>759557</td>
-    </tr>
-    <tr>
-      <th>SHANKMAN JEFFREY A</th>
-      <td>2000000</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>jeffrey.shankman@enron.com</td>
-      <td>1441898</td>
-      <td>178979</td>
-      <td>2681</td>
-      <td>94</td>
-      <td>83</td>
-      <td>...</td>
-      <td>554422</td>
-      <td>1191</td>
-      <td>False</td>
-      <td>630137</td>
-      <td>NaN</td>
-      <td>304110</td>
-      <td>1730</td>
-      <td>3221</td>
-      <td>3038702</td>
-      <td>2072035</td>
-    </tr>
-    <tr>
-      <th>SHAPIRO RICHARD S</th>
-      <td>650000</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>richard.shapiro@enron.com</td>
-      <td>607837</td>
-      <td>137767</td>
-      <td>1215</td>
-      <td>74</td>
-      <td>65</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>705</td>
-      <td>False</td>
-      <td>379164</td>
-      <td>NaN</td>
-      <td>269076</td>
-      <td>4527</td>
-      <td>15149</td>
-      <td>1057548</td>
-      <td>987001</td>
-    </tr>
-    <tr>
-      <th>SHARP VICTORIA T</th>
-      <td>600000</td>
-      <td>187469</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>vicki.sharp@enron.com</td>
-      <td>281073</td>
-      <td>116337</td>
-      <td>136</td>
-      <td>24</td>
-      <td>6</td>
-      <td>...</td>
-      <td>422158</td>
-      <td>2401</td>
-      <td>False</td>
-      <td>213063</td>
-      <td>NaN</td>
-      <td>248146</td>
-      <td>2477</td>
-      <td>3136</td>
-      <td>1576511</td>
-      <td>494136</td>
-    </tr>
-    <tr>
-      <th>SHELBY REX</th>
-      <td>200000</td>
-      <td>NaN</td>
-      <td>-4167</td>
-      <td>NaN</td>
-      <td>rex.shelby@enron.com</td>
-      <td>1624396</td>
-      <td>22884</td>
-      <td>39</td>
-      <td>13</td>
-      <td>14</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>1573324</td>
-      <td>True</td>
-      <td>869220</td>
-      <td>NaN</td>
-      <td>211844</td>
-      <td>91</td>
-      <td>225</td>
-      <td>2003885</td>
-      <td>2493616</td>
-    </tr>
-    <tr>
-      <th>SHERRICK JEFFREY B</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>jeffrey.sherrick@enron.com</td>
-      <td>1426469</td>
-      <td>NaN</td>
-      <td>25</td>
-      <td>39</td>
-      <td>18</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>False</td>
-      <td>405999</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>583</td>
-      <td>613</td>
-      <td>NaN</td>
-      <td>1832468</td>
-    </tr>
-    <tr>
-      <th>SHERRIFF JOHN R</th>
-      <td>1500000</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>john.sherriff@enron.com</td>
-      <td>1835558</td>
-      <td>NaN</td>
-      <td>92</td>
-      <td>28</td>
-      <td>23</td>
-      <td>...</td>
-      <td>554422</td>
-      <td>1852186</td>
-      <td>False</td>
-      <td>1293424</td>
-      <td>NaN</td>
-      <td>428780</td>
-      <td>2103</td>
-      <td>3187</td>
-      <td>4335388</td>
-      <td>3128982</td>
-    </tr>
-    <tr>
-      <th>SKILLING JEFFREY K</th>
-      <td>5600000</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>jeff.skilling@enron.com</td>
-      <td>19250000</td>
-      <td>29336</td>
-      <td>108</td>
-      <td>88</td>
-      <td>30</td>
-      <td>...</td>
-      <td>1920000</td>
-      <td>22122</td>
-      <td>True</td>
-      <td>6843672</td>
-      <td>NaN</td>
-      <td>1111258</td>
-      <td>2042</td>
-      <td>3627</td>
-      <td>8682716</td>
-      <td>26093672</td>
-    </tr>
-    <tr>
-      <th>STABLER FRANK</th>
-      <td>500000</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>frank.stabler@enron.com</td>
-      <td>NaN</td>
-      <td>16514</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>356071</td>
-      <td>False</td>
-      <td>511734</td>
-      <td>NaN</td>
-      <td>239502</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>1112087</td>
-      <td>511734</td>
-    </tr>
-    <tr>
-      <th>SULLIVAN-SHAKLOVITZ COLLEEN</th>
-      <td>100000</td>
-      <td>181993</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>1362375</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>554422</td>
-      <td>162</td>
-      <td>False</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>162779</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>999356</td>
-      <td>1362375</td>
-    </tr>
-    <tr>
-      <th>SUNDE MARTIN</th>
-      <td>700000</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>marty.sunde@enron.com</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>38</td>
-      <td>37</td>
-      <td>13</td>
-      <td>...</td>
-      <td>476451</td>
-      <td>111122</td>
-      <td>False</td>
-      <td>698920</td>
-      <td>NaN</td>
-      <td>257486</td>
-      <td>2565</td>
-      <td>2647</td>
-      <td>1545059</td>
-      <td>698920</td>
-    </tr>
-    <tr>
-      <th>TAYLOR MITCHELL S</th>
-      <td>600000</td>
-      <td>227449</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>mitchell.taylor@enron.com</td>
-      <td>3181250</td>
-      <td>NaN</td>
-      <td>29</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>False</td>
-      <td>563798</td>
-      <td>NaN</td>
-      <td>265214</td>
-      <td>300</td>
-      <td>533</td>
-      <td>1092663</td>
-      <td>3745048</td>
-    </tr>
-    <tr>
-      <th>THORN TERENCE H</th>
-      <td>NaN</td>
-      <td>16586</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>terence.thorn@enron.com</td>
-      <td>4452476</td>
-      <td>46145</td>
-      <td>41</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>200000</td>
-      <td>426629</td>
-      <td>False</td>
-      <td>365320</td>
-      <td>NaN</td>
-      <td>222093</td>
-      <td>73</td>
-      <td>266</td>
-      <td>911453</td>
-      <td>4817796</td>
-    </tr>
-    <tr>
-      <th>TILNEY ELIZABETH A</th>
-      <td>300000</td>
-      <td>NaN</td>
-      <td>-575000</td>
-      <td>NaN</td>
-      <td>elizabeth.tilney@enron.com</td>
-      <td>591250</td>
-      <td>NaN</td>
-      <td>19</td>
-      <td>10</td>
-      <td>11</td>
-      <td>...</td>
-      <td>275000</td>
-      <td>152055</td>
-      <td>False</td>
-      <td>576792</td>
-      <td>NaN</td>
-      <td>247338</td>
-      <td>379</td>
-      <td>460</td>
-      <td>399393</td>
-      <td>1168042</td>
-    </tr>
-    <tr>
-      <th>UMANOFF ADAM S</th>
-      <td>788750</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>adam.umanoff@enron.com</td>
-      <td>NaN</td>
-      <td>53122</td>
-      <td>18</td>
-      <td>12</td>
-      <td>0</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>False</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>288589</td>
-      <td>41</td>
-      <td>111</td>
-      <td>1130461</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>URQUHART JOHN A</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>-36666</td>
-      <td>36666</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>228656</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>False</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>228656</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>WAKEHAM JOHN</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>109298</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>103773</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>False</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>213071</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>WALLS JR ROBERT H</th>
-      <td>850000</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>rob.walls@enron.com</td>
-      <td>4346544</td>
-      <td>50936</td>
-      <td>146</td>
-      <td>17</td>
-      <td>0</td>
-      <td>...</td>
-      <td>540751</td>
-      <td>2</td>
-      <td>False</td>
-      <td>1552453</td>
-      <td>NaN</td>
-      <td>357091</td>
-      <td>215</td>
-      <td>671</td>
-      <td>1798780</td>
-      <td>5898997</td>
-    </tr>
-    <tr>
-      <th>WALTERS GARETH W</th>
-      <td>NaN</td>
-      <td>53625</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>1030329</td>
-      <td>33785</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>False</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>87410</td>
-      <td>1030329</td>
-    </tr>
-    <tr>
-      <th>WASAFF GEORGE</th>
-      <td>325000</td>
-      <td>831299</td>
-      <td>-583325</td>
-      <td>NaN</td>
-      <td>george.wasaff@enron.com</td>
-      <td>1668260</td>
-      <td>NaN</td>
-      <td>30</td>
-      <td>22</td>
-      <td>7</td>
-      <td>...</td>
-      <td>200000</td>
-      <td>1425</td>
-      <td>False</td>
-      <td>388167</td>
-      <td>NaN</td>
-      <td>259996</td>
-      <td>337</td>
-      <td>400</td>
-      <td>1034395</td>
-      <td>2056427</td>
-    </tr>
-    <tr>
-      <th>WESTFAHL RICHARD K</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>-10800</td>
-      <td>NaN</td>
-      <td>dick.westfahl@enron.com</td>
-      <td>NaN</td>
-      <td>51870</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>256191</td>
-      <td>401130</td>
-      <td>False</td>
-      <td>384930</td>
-      <td>NaN</td>
-      <td>63744</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>762135</td>
-      <td>384930</td>
-    </tr>
-    <tr>
-      <th>WHALEY DAVID A</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>98718</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>False</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>98718</td>
-    </tr>
-    <tr>
-      <th>WHALLEY LAWRENCE G</th>
-      <td>3000000</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>greg.whalley@enron.com</td>
-      <td>3282960</td>
-      <td>57838</td>
-      <td>556</td>
-      <td>186</td>
-      <td>24</td>
-      <td>...</td>
-      <td>808346</td>
-      <td>301026</td>
-      <td>False</td>
-      <td>2796177</td>
-      <td>NaN</td>
-      <td>510364</td>
-      <td>3920</td>
-      <td>6019</td>
-      <td>4677574</td>
-      <td>6079137</td>
-    </tr>
-    <tr>
-      <th>WHITE JR THOMAS E</th>
-      <td>450000</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>thomas.white@enron.com</td>
-      <td>1297049</td>
-      <td>81353</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>1085463</td>
-      <td>False</td>
-      <td>13847074</td>
-      <td>NaN</td>
-      <td>317543</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>1934359</td>
-      <td>15144123</td>
-    </tr>
-    <tr>
-      <th>WINOKUR JR. HERBERT S</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>-25000</td>
-      <td>108579</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>1413</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>False</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>84992</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>WODRASKA JOHN</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>john.wodraska@enron.com</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>189583</td>
-      <td>False</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>189583</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>WROBEL BRUCE</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>139130</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>False</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>139130</td>
-    </tr>
-    <tr>
-      <th>YEAGER F SCOTT</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>scott.yeager@enron.com</td>
-      <td>8308552</td>
-      <td>53947</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>147950</td>
-      <td>True</td>
-      <td>3576206</td>
-      <td>NaN</td>
-      <td>158403</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>360300</td>
-      <td>11884758</td>
-    </tr>
-    <tr>
-      <th>YEAP SOON</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>192758</td>
-      <td>55097</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>False</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>55097</td>
-      <td>192758</td>
-    </tr>
-  </tbody>
-</table>
-<p>144 rows × 21 columns</p>
-</div>
-
-
 
 
 ```python
 print enron_df.index.values
 print enron_df.ix['LAY KENNETH L']
+print "Number of People: ",len(enron_df.index.values)
+print "Number of Features: ",len(enron_df.ix['LAY KENNETH L'])
 ```
 
     ['ALLEN PHILLIP K' 'BADUM JAMES P' 'BANNANTINE JAMES M' 'BAXTER JOHN C'
@@ -1592,8 +84,8 @@ print enron_df.ix['LAY KENNETH L']
      'JACKSON CHARLENE R' 'JAEDICKE ROBERT' 'KAMINSKI WINCENTY J'
      'KEAN STEVEN J' 'KISHKILL JOSEPH G' 'KITCHEN LOUISE' 'KOENIG MARK E'
      'KOPPER MICHAEL J' 'LAVORATO JOHN J' 'LAY KENNETH L' 'LEFF DANIEL P'
-     'LEMAISTRE CHARLES' 'LEWIS RICHARD' 'LINDHOLM TOD A' 'LOCKHART EUGENE E'
-     'LOWRY CHARLES P' 'MARTIN AMANDA K' 'MCCARTY DANNY J' 'MCCLELLAN GEORGE'
+     'LEMAISTRE CHARLES' 'LEWIS RICHARD' 'LINDHOLM TOD A' 'LOWRY CHARLES P'
+     'MARTIN AMANDA K' 'MCCARTY DANNY J' 'MCCLELLAN GEORGE'
      'MCCONNELL MICHAEL S' 'MCDONALD REBECCA' 'MCMAHON JEFFREY'
      'MENDELSOHN JOHN' 'METTS MARK' 'MEYER JEROME J' 'MEYER ROCKFORD G'
      'MORAN MICHAEL P' 'MORDAUNT KRISTINA M' 'MULLER MARK S' 'MURRAY JULIA H'
@@ -1609,33 +101,36 @@ print enron_df.ix['LAY KENNETH L']
      'WALTERS GARETH W' 'WASAFF GEORGE' 'WESTFAHL RICHARD K' 'WHALEY DAVID A'
      'WHALLEY LAWRENCE G' 'WHITE JR THOMAS E' 'WINOKUR JR. HERBERT S'
      'WODRASKA JOHN' 'WROBEL BRUCE' 'YEAGER F SCOTT' 'YEAP SOON']
-    bonus                                      7000000
+    bonus                                        7e+06
     deferral_payments                           202911
     deferred_income                            -300000
     director_fees                                  NaN
     email_address                kenneth.lay@enron.com
-    exercised_stock_options                   34348384
+    exercised_stock_options                3.43484e+07
     expenses                                     99832
     from_messages                                   36
     from_poi_to_this_person                        123
     from_this_person_to_poi                         16
-    loan_advances                             81525000
-    long_term_incentive                        3600000
-    other                                     10359729
+    loan_advances                           8.1525e+07
+    long_term_incentive                        3.6e+06
+    other                                  1.03597e+07
     poi                                           True
-    restricted_stock                          14761694
+    restricted_stock                       1.47617e+07
     restricted_stock_deferred                      NaN
-    salary                                     1072321
+    salary                                 1.07232e+06
     shared_receipt_with_poi                       2411
     to_messages                                   4273
-    total_payments                           103559793
-    total_stock_value                         49110078
+    total_payments                          1.0356e+08
+    total_stock_value                      4.91101e+07
     Name: LAY KENNETH L, dtype: object
+    Number of People:  143
+    Number of Features:  21
     
 
 
 ```python
-enron_df.replace(to_replace = 'NaN', value = 0.0)
+enron_df = enron_df.replace(to_replace = 'NaN', value = np.nan)
+enron_df
 ```
 
 
@@ -1675,7 +170,7 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>4175000.0</td>
       <td>2869717.0</td>
       <td>-3081055.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>phillip.allen@enron.com</td>
       <td>1729541.0</td>
       <td>13868.0</td>
@@ -1696,34 +191,34 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     </tr>
     <tr>
       <th>BADUM JAMES P</th>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>178980.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>257817.0</td>
       <td>3486.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>False</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>182466.0</td>
       <td>257817.0</td>
     </tr>
     <tr>
       <th>BANNANTINE JAMES M</th>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>-5104.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>james.bannantine@enron.com</td>
       <td>4046157.0</td>
       <td>56301.0</td>
@@ -1731,7 +226,7 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>39.0</td>
       <td>0.0</td>
       <td>...</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>864523.0</td>
       <td>False</td>
       <td>1757552.0</td>
@@ -1747,22 +242,22 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>1200000.0</td>
       <td>1295738.0</td>
       <td>-1386055.0</td>
-      <td>0.0</td>
-      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>6680544.0</td>
       <td>11200.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
       <td>1586055.0</td>
       <td>2660303.0</td>
       <td>False</td>
       <td>3942714.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>267102.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>5634343.0</td>
       <td>10623258.0</td>
     </tr>
@@ -1771,67 +266,67 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>400000.0</td>
       <td>260455.0</td>
       <td>-201641.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>frank.bay@enron.com</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>129142.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>69.0</td>
       <td>False</td>
       <td>145796.0</td>
       <td>-82782.0</td>
       <td>239671.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>827696.0</td>
       <td>63014.0</td>
     </tr>
     <tr>
       <th>BAZELIDES PHILIP J</th>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>684694.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>1599641.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
       <td>93750.0</td>
       <td>874.0</td>
       <td>False</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>80818.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>860136.0</td>
       <td>1599641.0</td>
     </tr>
     <tr>
       <th>BECK SALLY W</th>
       <td>700000.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>sally.beck@enron.com</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>37172.0</td>
       <td>4343.0</td>
       <td>144.0</td>
       <td>386.0</td>
       <td>...</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>566.0</td>
       <td>False</td>
       <td>126027.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>231330.0</td>
       <td>2639.0</td>
       <td>7315.0</td>
@@ -1843,7 +338,7 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>5249999.0</td>
       <td>2144013.0</td>
       <td>-2334434.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>tim.belden@enron.com</td>
       <td>953136.0</td>
       <td>17355.0</td>
@@ -1851,11 +346,11 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>228.0</td>
       <td>108.0</td>
       <td>...</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>210698.0</td>
       <td>True</td>
       <td>157569.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>213999.0</td>
       <td>5521.0</td>
       <td>7991.0</td>
@@ -1864,60 +359,60 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     </tr>
     <tr>
       <th>BELFER ROBERT</th>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>-102500.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>3285.0</td>
-      <td>0</td>
+      <td>NaN</td>
       <td>3285.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>False</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>44093.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>102500.0</td>
       <td>-44093.0</td>
     </tr>
     <tr>
       <th>BERBERIAN DAVID</th>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>david.berberian@enron.com</td>
       <td>1624396.0</td>
       <td>11892.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>False</td>
       <td>869220.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>216582.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>228474.0</td>
       <td>2493616.0</td>
     </tr>
     <tr>
       <th>BERGSIEKER RICHARD P</th>
       <td>250000.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>-485813.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>rick.bergsieker@enron.com</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>59175.0</td>
       <td>59.0</td>
       <td>4.0</td>
@@ -1927,7 +422,7 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>427316.0</td>
       <td>False</td>
       <td>659249.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>187922.0</td>
       <td>233.0</td>
       <td>383.0</td>
@@ -1936,34 +431,34 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     </tr>
     <tr>
       <th>BHATNAGAR SANJAY</th>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>137864.0</td>
       <td>sanjay.bhatnagar@enron.com</td>
       <td>2604490.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>29.0</td>
       <td>0.0</td>
       <td>1.0</td>
       <td>...</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>137864.0</td>
       <td>False</td>
       <td>-2604490.0</td>
       <td>15456290.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>463.0</td>
       <td>523.0</td>
       <td>15456290.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>BIBI PHILIPPE A</th>
       <td>1000000.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>philippe.bibi@enron.com</td>
       <td>1465734.0</td>
       <td>38559.0</td>
@@ -1975,7 +470,7 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>425688.0</td>
       <td>False</td>
       <td>378082.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>213625.0</td>
       <td>1336.0</td>
       <td>1607.0</td>
@@ -1985,9 +480,9 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     <tr>
       <th>BLACHMAN JEREMY M</th>
       <td>850000.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>jeremy.blachman@enron.com</td>
       <td>765313.0</td>
       <td>84208.0</td>
@@ -1999,7 +494,7 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>272.0</td>
       <td>False</td>
       <td>189041.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>248546.0</td>
       <td>2326.0</td>
       <td>2475.0</td>
@@ -2008,36 +503,36 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     </tr>
     <tr>
       <th>BLAKE JR. NORMAN P</th>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>-113784.0</td>
       <td>113784.0</td>
-      <td>0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>1279.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>False</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>1279.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>BOWEN JR RAYMOND M</th>
       <td>1350000.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>-833.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>raymond.bowen@enron.com</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>65907.0</td>
       <td>27.0</td>
       <td>140.0</td>
@@ -2047,7 +542,7 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>1621.0</td>
       <td>True</td>
       <td>252055.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>278601.0</td>
       <td>1593.0</td>
       <td>1858.0</td>
@@ -2056,34 +551,34 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     </tr>
     <tr>
       <th>BROWN MICHAEL</th>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>michael.brown@enron.com</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>49288.0</td>
       <td>41.0</td>
       <td>13.0</td>
       <td>1.0</td>
       <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>False</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>761.0</td>
       <td>1486.0</td>
       <td>49288.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>BUCHANAN HAROLD G</th>
       <td>500000.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>john.buchanan@enron.com</td>
       <td>825464.0</td>
       <td>600.0</td>
@@ -2095,7 +590,7 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>1215.0</td>
       <td>False</td>
       <td>189041.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>248017.0</td>
       <td>23.0</td>
       <td>1088.0</td>
@@ -2105,24 +600,24 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     <tr>
       <th>BUTTS ROBERT H</th>
       <td>750000.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>-75000.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>bob.butts@enron.com</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>9410.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
       <td>175000.0</td>
       <td>150656.0</td>
       <td>False</td>
       <td>417619.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>261516.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>1271582.0</td>
       <td>417619.0</td>
     </tr>
@@ -2131,10 +626,10 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>900000.0</td>
       <td>649584.0</td>
       <td>-694862.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>rick.buy@enron.com</td>
       <td>2542813.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>1053.0</td>
       <td>156.0</td>
       <td>71.0</td>
@@ -2143,7 +638,7 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>400572.0</td>
       <td>False</td>
       <td>901657.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>330546.0</td>
       <td>2333.0</td>
       <td>3523.0</td>
@@ -2153,11 +648,11 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     <tr>
       <th>CALGER CHRISTOPHER F</th>
       <td>1250000.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>-262500.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>christopher.calger@enron.com</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>35818.0</td>
       <td>144.0</td>
       <td>199.0</td>
@@ -2167,7 +662,7 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>486.0</td>
       <td>True</td>
       <td>126027.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>240189.0</td>
       <td>2188.0</td>
       <td>2598.0</td>
@@ -2177,12 +672,12 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     <tr>
       <th>CARTER REBECCA C</th>
       <td>300000.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>-159792.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>rebecca.carter@enron.com</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>15.0</td>
       <td>29.0</td>
       <td>7.0</td>
@@ -2196,16 +691,16 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>196.0</td>
       <td>312.0</td>
       <td>477557.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>CAUSEY RICHARD A</th>
       <td>1000000.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>-235000.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>richard.causey@enron.com</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>30674.0</td>
       <td>49.0</td>
       <td>58.0</td>
@@ -2215,7 +710,7 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>307895.0</td>
       <td>True</td>
       <td>2502063.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>415189.0</td>
       <td>1585.0</td>
       <td>1892.0</td>
@@ -2224,74 +719,74 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     </tr>
     <tr>
       <th>CHAN RONNIE</th>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>-98784.0</td>
       <td>98784.0</td>
-      <td>0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>False</td>
       <td>32460.0</td>
       <td>-32460.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>CHRISTODOULOU DIOMEDES</th>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>diomedes.christodoulou@enron.com</td>
       <td>5127155.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>False</td>
       <td>950730.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>6077885.0</td>
     </tr>
     <tr>
       <th>CLINE KENNETH W</th>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>False</td>
       <td>662086.0</td>
       <td>-472568.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>189518.0</td>
     </tr>
     <tr>
@@ -2299,19 +794,19 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>1200000.0</td>
       <td>27610.0</td>
       <td>-144062.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>wes.colwell@enron.com</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>16514.0</td>
       <td>40.0</td>
       <td>240.0</td>
       <td>11.0</td>
       <td>...</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>101740.0</td>
       <td>True</td>
       <td>698242.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>288542.0</td>
       <td>1132.0</td>
       <td>1758.0</td>
@@ -2320,34 +815,34 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     </tr>
     <tr>
       <th>CORDES WILLIAM R</th>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>bill.cordes@enron.com</td>
       <td>651850.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>12.0</td>
       <td>10.0</td>
       <td>0.0</td>
       <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>False</td>
       <td>386335.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>58.0</td>
       <td>764.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>1038185.0</td>
     </tr>
     <tr>
       <th>COX DAVID</th>
       <td>800000.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>-41250.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>chip.cox@enron.com</td>
       <td>117551.0</td>
       <td>27861.0</td>
@@ -2355,11 +850,11 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>0.0</td>
       <td>4.0</td>
       <td>...</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>494.0</td>
       <td>False</td>
       <td>378082.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>314288.0</td>
       <td>71.0</td>
       <td>102.0</td>
@@ -2369,24 +864,24 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     <tr>
       <th>CUMBERLAND MICHAEL S</th>
       <td>325000.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>22344.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
       <td>275000.0</td>
       <td>713.0</td>
       <td>False</td>
       <td>207940.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>184899.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>807956.0</td>
       <td>207940.0</td>
     </tr>
@@ -2416,58 +911,58 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     </tr>
     <tr>
       <th>SAVAGE FRANK</th>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>-121284.0</td>
       <td>125034.0</td>
-      <td>0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>False</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>3750.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>SCRIMSHAW MATTHEW</th>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>matthew.scrimshaw@enron.com</td>
       <td>759557.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>False</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>759557.0</td>
     </tr>
     <tr>
       <th>SHANKMAN JEFFREY A</th>
       <td>2000000.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>jeffrey.shankman@enron.com</td>
       <td>1441898.0</td>
       <td>178979.0</td>
@@ -2479,7 +974,7 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>1191.0</td>
       <td>False</td>
       <td>630137.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>304110.0</td>
       <td>1730.0</td>
       <td>3221.0</td>
@@ -2489,9 +984,9 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     <tr>
       <th>SHAPIRO RICHARD S</th>
       <td>650000.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>richard.shapiro@enron.com</td>
       <td>607837.0</td>
       <td>137767.0</td>
@@ -2499,11 +994,11 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>74.0</td>
       <td>65.0</td>
       <td>...</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>705.0</td>
       <td>False</td>
       <td>379164.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>269076.0</td>
       <td>4527.0</td>
       <td>15149.0</td>
@@ -2514,8 +1009,8 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <th>SHARP VICTORIA T</th>
       <td>600000.0</td>
       <td>187469.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>vicki.sharp@enron.com</td>
       <td>281073.0</td>
       <td>116337.0</td>
@@ -2527,7 +1022,7 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>2401.0</td>
       <td>False</td>
       <td>213063.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>248146.0</td>
       <td>2477.0</td>
       <td>3136.0</td>
@@ -2537,9 +1032,9 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     <tr>
       <th>SHELBY REX</th>
       <td>200000.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>-4167.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>rex.shelby@enron.com</td>
       <td>1624396.0</td>
       <td>22884.0</td>
@@ -2547,11 +1042,11 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>13.0</td>
       <td>14.0</td>
       <td>...</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>1573324.0</td>
       <td>True</td>
       <td>869220.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>211844.0</td>
       <td>91.0</td>
       <td>225.0</td>
@@ -2560,37 +1055,37 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     </tr>
     <tr>
       <th>SHERRICK JEFFREY B</th>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>jeffrey.sherrick@enron.com</td>
       <td>1426469.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>25.0</td>
       <td>39.0</td>
       <td>18.0</td>
       <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>False</td>
       <td>405999.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>583.0</td>
       <td>613.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>1832468.0</td>
     </tr>
     <tr>
       <th>SHERRIFF JOHN R</th>
       <td>1500000.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>john.sherriff@enron.com</td>
       <td>1835558.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>92.0</td>
       <td>28.0</td>
       <td>23.0</td>
@@ -2599,7 +1094,7 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>1852186.0</td>
       <td>False</td>
       <td>1293424.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>428780.0</td>
       <td>2103.0</td>
       <td>3187.0</td>
@@ -2609,9 +1104,9 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     <tr>
       <th>SKILLING JEFFREY K</th>
       <td>5600000.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>jeff.skilling@enron.com</td>
       <td>19250000.0</td>
       <td>29336.0</td>
@@ -2623,7 +1118,7 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>22122.0</td>
       <td>True</td>
       <td>6843672.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>1111258.0</td>
       <td>2042.0</td>
       <td>3627.0</td>
@@ -2633,24 +1128,24 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     <tr>
       <th>STABLER FRANK</th>
       <td>500000.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>frank.stabler@enron.com</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>16514.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>356071.0</td>
       <td>False</td>
       <td>511734.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>239502.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>1112087.0</td>
       <td>511734.0</td>
     </tr>
@@ -2658,35 +1153,35 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <th>SULLIVAN-SHAKLOVITZ COLLEEN</th>
       <td>100000.0</td>
       <td>181993.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>1362375.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
       <td>554422.0</td>
       <td>162.0</td>
       <td>False</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>162779.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>999356.0</td>
       <td>1362375.0</td>
     </tr>
     <tr>
       <th>SUNDE MARTIN</th>
       <td>700000.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>marty.sunde@enron.com</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>38.0</td>
       <td>37.0</td>
       <td>13.0</td>
@@ -2695,7 +1190,7 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>111122.0</td>
       <td>False</td>
       <td>698920.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>257486.0</td>
       <td>2565.0</td>
       <td>2647.0</td>
@@ -2706,20 +1201,20 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <th>TAYLOR MITCHELL S</th>
       <td>600000.0</td>
       <td>227449.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>mitchell.taylor@enron.com</td>
       <td>3181250.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>29.0</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>False</td>
       <td>563798.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>265214.0</td>
       <td>300.0</td>
       <td>533.0</td>
@@ -2728,10 +1223,10 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     </tr>
     <tr>
       <th>THORN TERENCE H</th>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>16586.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>terence.thorn@enron.com</td>
       <td>4452476.0</td>
       <td>46145.0</td>
@@ -2743,7 +1238,7 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>426629.0</td>
       <td>False</td>
       <td>365320.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>222093.0</td>
       <td>73.0</td>
       <td>266.0</td>
@@ -2753,12 +1248,12 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     <tr>
       <th>TILNEY ELIZABETH A</th>
       <td>300000.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>-575000.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>elizabeth.tilney@enron.com</td>
       <td>591250.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>19.0</td>
       <td>10.0</td>
       <td>11.0</td>
@@ -2767,7 +1262,7 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>152055.0</td>
       <td>False</td>
       <td>576792.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>247338.0</td>
       <td>379.0</td>
       <td>460.0</td>
@@ -2777,81 +1272,81 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     <tr>
       <th>UMANOFF ADAM S</th>
       <td>788750.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>adam.umanoff@enron.com</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>53122.0</td>
       <td>18.0</td>
       <td>12.0</td>
       <td>0.0</td>
       <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>False</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>288589.0</td>
       <td>41.0</td>
       <td>111.0</td>
       <td>1130461.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>URQUHART JOHN A</th>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>-36666.0</td>
       <td>36666.0</td>
-      <td>0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>228656.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>False</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>228656.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>WAKEHAM JOHN</th>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>109298.0</td>
-      <td>0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>103773.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>False</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>213071.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>WALLS JR ROBERT H</th>
       <td>850000.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>rob.walls@enron.com</td>
       <td>4346544.0</td>
       <td>50936.0</td>
@@ -2863,7 +1358,7 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>2.0</td>
       <td>False</td>
       <td>1552453.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>357091.0</td>
       <td>215.0</td>
       <td>671.0</td>
@@ -2872,25 +1367,25 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     </tr>
     <tr>
       <th>WALTERS GARETH W</th>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>53625.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>1030329.0</td>
       <td>33785.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>False</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>87410.0</td>
       <td>1030329.0</td>
     </tr>
@@ -2899,10 +1394,10 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>325000.0</td>
       <td>831299.0</td>
       <td>-583325.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>george.wasaff@enron.com</td>
       <td>1668260.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>30.0</td>
       <td>22.0</td>
       <td>7.0</td>
@@ -2911,7 +1406,7 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>1425.0</td>
       <td>False</td>
       <td>388167.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>259996.0</td>
       <td>337.0</td>
       <td>400.0</td>
@@ -2920,58 +1415,58 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     </tr>
     <tr>
       <th>WESTFAHL RICHARD K</th>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>-10800.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>dick.westfahl@enron.com</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>51870.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
       <td>256191.0</td>
       <td>401130.0</td>
       <td>False</td>
       <td>384930.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>63744.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>762135.0</td>
       <td>384930.0</td>
     </tr>
     <tr>
       <th>WHALEY DAVID A</th>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>98718.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>False</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>98718.0</td>
     </tr>
     <tr>
       <th>WHALLEY LAWRENCE G</th>
       <td>3000000.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>greg.whalley@enron.com</td>
       <td>3282960.0</td>
       <td>57838.0</td>
@@ -2983,7 +1478,7 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
       <td>301026.0</td>
       <td>False</td>
       <td>2796177.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>510364.0</td>
       <td>3920.0</td>
       <td>6019.0</td>
@@ -2993,150 +1488,150 @@ enron_df.replace(to_replace = 'NaN', value = 0.0)
     <tr>
       <th>WHITE JR THOMAS E</th>
       <td>450000.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>thomas.white@enron.com</td>
       <td>1297049.0</td>
       <td>81353.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>1085463.0</td>
       <td>False</td>
       <td>13847074.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>317543.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>1934359.0</td>
       <td>15144123.0</td>
     </tr>
     <tr>
       <th>WINOKUR JR. HERBERT S</th>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>-25000.0</td>
       <td>108579.0</td>
-      <td>0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>1413.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>False</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>84992.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>WODRASKA JOHN</th>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>john.wodraska@enron.com</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>189583.0</td>
       <td>False</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>189583.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>WROBEL BRUCE</th>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>139130.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>False</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>139130.0</td>
     </tr>
     <tr>
       <th>YEAGER F SCOTT</th>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>scott.yeager@enron.com</td>
       <td>8308552.0</td>
       <td>53947.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>147950.0</td>
       <td>True</td>
       <td>3576206.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
       <td>158403.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>360300.0</td>
       <td>11884758.0</td>
     </tr>
     <tr>
       <th>YEAP SOON</th>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>192758.0</td>
       <td>55097.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>False</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>55097.0</td>
       <td>192758.0</td>
     </tr>
   </tbody>
 </table>
-<p>144 rows × 21 columns</p>
+<p>143 rows × 21 columns</p>
 </div>
 
 
@@ -3224,7 +1719,7 @@ enron_df_converted
       <td>178980.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>NaN</td>
+      <td>0</td>
       <td>257817.0</td>
       <td>3486.0</td>
       <td>0.0</td>
@@ -3272,7 +1767,7 @@ enron_df_converted
       <td>1295738.0</td>
       <td>-1386055.0</td>
       <td>0.0</td>
-      <td>NaN</td>
+      <td>0</td>
       <td>6680544.0</td>
       <td>11200.0</td>
       <td>0.0</td>
@@ -3320,7 +1815,7 @@ enron_df_converted
       <td>684694.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>NaN</td>
+      <td>0</td>
       <td>1599641.0</td>
       <td>0.0</td>
       <td>0.0</td>
@@ -3392,7 +1887,7 @@ enron_df_converted
       <td>-102500.0</td>
       <td>0.0</td>
       <td>3285.0</td>
-      <td>NaN</td>
+      <td>0</td>
       <td>3285.0</td>
       <td>0.0</td>
       <td>0.0</td>
@@ -3536,7 +2031,7 @@ enron_df_converted
       <td>0.0</td>
       <td>-113784.0</td>
       <td>113784.0</td>
-      <td>NaN</td>
+      <td>0</td>
       <td>0.0</td>
       <td>1279.0</td>
       <td>0.0</td>
@@ -3752,7 +2247,7 @@ enron_df_converted
       <td>0.0</td>
       <td>-98784.0</td>
       <td>98784.0</td>
-      <td>NaN</td>
+      <td>0</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
@@ -3800,7 +2295,7 @@ enron_df_converted
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>NaN</td>
+      <td>0</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
@@ -3896,7 +2391,7 @@ enron_df_converted
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>NaN</td>
+      <td>0</td>
       <td>0.0</td>
       <td>22344.0</td>
       <td>0.0</td>
@@ -3944,7 +2439,7 @@ enron_df_converted
       <td>0.0</td>
       <td>-121284.0</td>
       <td>125034.0</td>
-      <td>NaN</td>
+      <td>0</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
@@ -4184,7 +2679,7 @@ enron_df_converted
       <td>181993.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>NaN</td>
+      <td>0</td>
       <td>1362375.0</td>
       <td>0.0</td>
       <td>0.0</td>
@@ -4328,7 +2823,7 @@ enron_df_converted
       <td>0.0</td>
       <td>-36666.0</td>
       <td>36666.0</td>
-      <td>NaN</td>
+      <td>0</td>
       <td>0.0</td>
       <td>228656.0</td>
       <td>0.0</td>
@@ -4352,7 +2847,7 @@ enron_df_converted
       <td>0.0</td>
       <td>0.0</td>
       <td>109298.0</td>
-      <td>NaN</td>
+      <td>0</td>
       <td>0.0</td>
       <td>103773.0</td>
       <td>0.0</td>
@@ -4400,7 +2895,7 @@ enron_df_converted
       <td>53625.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>NaN</td>
+      <td>0</td>
       <td>1030329.0</td>
       <td>33785.0</td>
       <td>0.0</td>
@@ -4472,7 +2967,7 @@ enron_df_converted
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>NaN</td>
+      <td>0</td>
       <td>98718.0</td>
       <td>0.0</td>
       <td>0.0</td>
@@ -4544,7 +3039,7 @@ enron_df_converted
       <td>0.0</td>
       <td>-25000.0</td>
       <td>108579.0</td>
-      <td>NaN</td>
+      <td>0</td>
       <td>0.0</td>
       <td>1413.0</td>
       <td>0.0</td>
@@ -4592,7 +3087,7 @@ enron_df_converted
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>NaN</td>
+      <td>0</td>
       <td>139130.0</td>
       <td>0.0</td>
       <td>0.0</td>
@@ -4640,7 +3135,7 @@ enron_df_converted
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>NaN</td>
+      <td>0</td>
       <td>192758.0</td>
       <td>55097.0</td>
       <td>0.0</td>
@@ -4660,7 +3155,7 @@ enron_df_converted
     </tr>
   </tbody>
 </table>
-<p>144 rows × 21 columns</p>
+<p>143 rows × 21 columns</p>
 </div>
 
 
