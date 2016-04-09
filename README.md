@@ -12,13 +12,13 @@ P5 Identify Fraud from Enron Project
 I tested several algorithms (DecisionTreeClassifier, KNeighborsClassifier, SVC, GaussianNB, RandomForestClassifier, AdaBoostClassifier, and GradientBoostingClassifier).  I also created a VotingClassifier that used each of the tuned classifiers.  The following table summarizes the performance of each of these algorithms when run alone.
 <table>
 <tr><b><u>
-<td>Algorithm
+<td>Algorithm</u></b>
 </td>
-<td>Accuracy
+<td><b><u>Accuracy</u></b>
 </td>
-<td>Precision
+<td><b><u>Precision</u></b>
 </td>
-<td>Recall
+<td><b><u>Recall</u></b>
 </td>
 </tr>
 <tr>
