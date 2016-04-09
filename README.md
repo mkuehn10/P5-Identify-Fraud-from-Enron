@@ -94,7 +94,7 @@ I tested several algorithms (DecisionTreeClassifier, KNeighborsClassifier, SVC, 
 <tr>
 <td>VotingClassifier
 </td>
-<td>0
+<td>
 </td>
 <td>
 </td>
@@ -106,6 +106,41 @@ I tested several algorithms (DecisionTreeClassifier, KNeighborsClassifier, SVC, 
 
 * What does it mean to tune the parameters of an algorithm, and what can happen if you don’t do this well?  How did you tune the parameters of your particular algorithm? (Some algorithms do not have parameters that you need to tune -- if this is the case for the one you picked, identify and briefly explain how you would have done it for the model that was not your final choice or a different model that does utilize parameter tuning, e.g. a decision tree classifier).  [relevant rubric item: “tune the algorithm”]
 
+Tuning the parameters of an algorithm means to make minor changes to the various options to see how these changes affect the prediction power of the algorithm.  If this is not done correctly, the algorithm will not be as effective as it could be.  In order to tune the parameters of the various algorithms I tested, I used GridSearchCV to automatically find the best parameter options for each of the algorithms.  Once I had finalized my prediction features, each of the models was run using GridSearchCV to find the optimal parameters.  These parameters were then used for each of the models in the VotingClassifier.
+
 * What is validation, and what’s a classic mistake you can make if you do it wrong? How did you validate your analysis?  [relevant rubric item: “validation strategy”]
 
 * Give at least 2 evaluation metrics and your average performance for each of them.  Explain an interpretation of your metrics that says something human-understandable about your algorithm’s performance. [relevant rubric item: “usage of evaluation metrics”]
+
+The evaluation metrics I used to assess performance were accuracy, precision, and recall.  The metrics are summarized in the table above.  The accuracy describes the overall percentage of predictions that were correct.  The precision identifies what percentage of the positive predictions were correct.  The recall identifies what percentage of the actual positive cases were identified. In the context of the Enron data:
+
+* Accuracy: How many of the POIs and non-POIs were accurately identified as POIs and non-POIs?
+* Precision: What percentage of the predicted POIs were actually POIs?
+* Recall: What percentage of the true POIs were predicted as POIs?
+
+<table>
+<tr>
+<td>
+</td>
+<td>Predicted POI 
+</td>
+<td>Predicted non-POI 
+</td>
+</tr>
+<tr>
+<td>Actual POI
+</td>
+<td>True Positive:
+</td>
+<td>False Negative:
+</td>
+</tr>
+<tr>
+<td>Actual non-POI
+</td>
+<td>False Positive:
+</td>
+<td>True Negative:
+</td>
+</tr>
+</table>
