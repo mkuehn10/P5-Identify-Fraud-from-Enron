@@ -122,13 +122,13 @@ The evaluation metrics I used to assess performance were accuracy, precision, an
 <tr>
 <td>
 </td>
-<td>Predicted POI 
+<td><b><u>Predicted POI</u></b> 
 </td>
-<td>Predicted non-POI 
+<td><b><u>Predicted non-POI</u></b>
 </td>
 </tr>
 <tr>
-<td>Actual POI
+<td><b><u>Actual POI</u></b>
 </td>
 <td>True Positive:
 </td>
@@ -136,7 +136,7 @@ The evaluation metrics I used to assess performance were accuracy, precision, an
 </td>
 </tr>
 <tr>
-<td>Actual non-POI
+<td><b><u>Actual non-POI</u></b>
 </td>
 <td>False Positive:
 </td>
