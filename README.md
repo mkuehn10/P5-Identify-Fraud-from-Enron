@@ -136,5 +136,5 @@ The evaluation metrics I used to assess performance were accuracy, precision, an
 
 ### References
 Information to help explain accuracy, precision, and recall taken from 
-<a href="http://www.kdnuggets.com/faq/precision-recall.html" target="new">KD Nuggets
+<a href="http://www.kdnuggets.com/faq/precision-recall.html" target="blank">KD Nuggets
 FAQ: How Are Precision and Recall Calculated?</a>
