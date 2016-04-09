@@ -203,6 +203,8 @@ do a good job of picking out the POIs from the data.
 The overall accuracy of the model comes from the number of true positives and true negatives that were correctly identified.  In this case, 11254 out of the 13000 data points were correctly identified.
 
 #### References
+Information on the Enron scandal taken from https://en.wikipedia.org/wiki/Enron_scandal
+
 Information to help explain accuracy, precision, and recall taken from 
 <a href="http://www.kdnuggets.com/faq/precision-recall.html" target="blank">KD Nuggets
 FAQ: How Are Precision and Recall Calculated?</a>
