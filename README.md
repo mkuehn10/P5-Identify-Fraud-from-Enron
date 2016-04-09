@@ -9,7 +9,7 @@ P5 Identify Fraud from Enron Project
 
 * What algorithm did you end up using? What other one(s) did you try? How did model performance differ between algorithms?  [relevant rubric item: “pick an algorithm”]
 
-I tested several algorithms (DecisionTreeClassifier, KNeighborsClassifier, SVC, GaussianNB, RandomForestClassifier, AdaBoostClassifier, and GradientBoostingClassifier).  I also created a VotingClassifier that used each of the tuned classifiers.  The following table summarizes the performance of each of these algorithms when run alone.
+I tested several algorithms (DecisionTreeClassifier, KNeighborsClassifier, GaussianNB, RandomForestClassifier, AdaBoostClassifier, and GradientBoostingClassifier).  I also created a VotingClassifier that used each of the tuned classifiers.  The following table summarizes the performance of each of these algorithms when run alone.
 <table>
 <tr>
 <td><b><u>Algorithm</u></b>
@@ -41,17 +41,6 @@ I tested several algorithms (DecisionTreeClassifier, KNeighborsClassifier, SVC, 
 <td>0.40
 </td>
 </tr>
-<tr>
-<td>SVC
-</td>
-<td>
-</td>
-<td>
-</td>
-<td>
-</td>
-</tr>
-<tr>
 <td>GaussianNB
 </td>
 <td>0.84
@@ -144,3 +133,7 @@ The evaluation metrics I used to assess performance were accuracy, precision, an
 </td>
 </tr>
 </table>
+
+### References
+Information to help explain accuracy, precision, and recall taken from 
+http://www.kdnuggets.com/faq/precision-recall.html

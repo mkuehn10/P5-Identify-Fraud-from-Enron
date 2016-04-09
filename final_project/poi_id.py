@@ -1,44 +1,55 @@
 #!/usr/bin/python
-
 import sys
 import pickle
 import pprint
 sys.path.append("../tools/")
-
 from feature_format import featureFormat, targetFeatureSplit
 from tester import dump_classifier_and_data
-
-
-
+features_list = ['poi', 'bonus', 'ratio', 'ratio_from_to',
+ 'deferral_payments',
+ 'deferred_income',
+ 'director_fees',
+ 'exercised_stock_options',
+ 'expenses',
+ 'from_messages',
+ 'from_poi_to_this_person',
+ 'from_this_person_to_poi',
+ 'loan_advances',
+ 'long_term_incentive',
+ 'other',
+ 'restricted_stock',
+ 'restricted_stock_deferred',
+ 'salary',
+ 'shared_receipt_with_poi',
+ 'to_messages',
+ 'total_payments',
+ 'total_stock_value']	
 ### Task 1: Select what features you'll use.
 ### features_list is a list of strings, each of which is a feature name.
 ### The first feature must be "poi".
-
 features_list = ['poi',
 				 'bonus',
 				 'exercised_stock_options',
-				 'salary']
+				 'salary']				 
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
     data_dict = pickle.load(data_file)
-#pprint.pprint(data_dict)
-
-### Data exploration
-### Total number of data points
-### Allocation across classes (POI/non-POI)
-### Number of features
-### Features with missing values?
-### Exploratory plots to look for outliers?
 
 ### Task 2: Remove outliers
 
-# Remove from data set
+# Total and Travel Agency are not people
+# Lockhart had no values in any column
 data_dict.pop('TOTAL', 0)
 data_dict.pop('THE TRAVEL AGENCY IN THE PARK', 0)
+data_dict.pop('LOCKHART EUGENE E', 0)
 
 ### Task 3: Create new feature(s)
 ### Store to my_dataset for easy export below.
 my_dataset = data_dict
+
+### Two new features
+### Ratio of bonus to salary
+### Ratio of from_messages to to_messages
 for key in my_dataset:
 	if (my_dataset[key]['bonus']) == 'NaN' or (my_dataset[key]['salary']) == 'NaN':
 		my_dataset[key]['ratio'] = 0.0
@@ -49,24 +60,10 @@ for key in my_dataset:
 		my_dataset[key]['ratio_from_to'] = 0.0
 	else:
 		my_dataset[key]['ratio_from_to'] = float(my_dataset[key]['from_messages']) / float(my_dataset[key]['to_messages'])
+
 ### Extract features and labels from dataset for local testing
 data = featureFormat(my_dataset, features_list, sort_keys = True)
 labels, features = targetFeatureSplit(data)
-#pprint.pprint(data[0:10])
-#pprint.pprint(labels)
-#pprint.pprint(features)
-
-#from sklearn.preprocessing import MinMaxScaler
-#pprint.pprint(min(data[:,1]))
-#pprint.pprint(max(data[:,1]))
-#pprint.pprint(min(data[:,2]))
-#pprint.pprint(max(data[:,2]))
-#min_max_scaler = MinMaxScaler()
-#data[:,1:2] = min_max_scaler.fit_transform(data[:,1:2])
-#data = min_max_scaler.fit_transform(data)
-#data[:,1] = min_max_scaler.fit_transform(data[:,1])
-#data[:,2] = min_max_scaler.fit_transform(data[:,2])
-#pprint.pprint(data[0:10])
 
 ### Task 4: Try a varity of classifiers
 ### Please name your classifier clf for easy export below.
@@ -74,14 +71,21 @@ labels, features = targetFeatureSplit(data)
 ### you'll need to use Pipelines. For more info:
 ### http://scikit-learn.org/stable/modules/pipeline.html
 
-# Provided to give you a starting point. Try a variety of classifiers.
+### Task 5: Tune your classifier to achieve better than .3 precision and recall 
+### using our testing script. Check the tester.py script in the final project
+### folder for details on the evaluation method, especially the test_classifier
+### function. Because of the small size of the dataset, the script uses
+### stratified shuffle split cross validation. For more info: 
+### http://scikit-learn.org/stable/modules/generated/sklearn.cross_validation.StratifiedShuffleSplit.html
 
-
-
+### Provided to give you a starting point. Try a variety of classifiers.
+### Use GridSearchCV to tune each algorithm separately and then pass the
+### optimized parameters to VotingClassifier for each algorithm
+ 
 from sklearn.grid_search import GridSearchCV
-# use_classifier can be 'GaussianNB', 'Tree', 'SVC', 'Neighbor', 'RForest',
-# 'AdaBoost', 'LogReg', 'Voting', 'GradBoost'
-use_classifier = 'SVC'
+### use_classifier can be 'GaussianNB', 'Tree', 'SVC', 'Neighbor', 'RForest',
+### 'AdaBoost', 'Voting', 'GradBoost'
+use_classifier = 'RForest'
 
 if use_classifier == 'Tree':
 	from sklearn.tree import DecisionTreeClassifier
@@ -97,12 +101,15 @@ if use_classifier == 'Tree':
 	clf = GridSearchCV(svr, parameters)
 	
 elif use_classifier == 'SVC':
-	from sklearn.svm import SVC
-	parameters = {'kernel':['linear', 'poly', 'rbf', 'sigmoid', 'precomputed'], 
-				  'C':[1, 10, 25, 50, 100],
-				  'degree':[2, 3, 4, 5],
-				  'gamma': [2, 3, 4, 'auto']}
-	svr = SVC()
+	from sklearn.svm import LinearSVC
+	parameters = {'C':[1, 10, 25, 50, 100],
+				  'penalty':['l2'],
+				  'dual':[True, False],
+				  'fit_intercept':[True, False],
+				  'class_weight':['balanced', None],
+				  'random_state': range(2),
+				  'max_iter':[1000,10000,100000]}
+	svr = LinearSVC()
 	clf = GridSearchCV(svr, parameters)
 	
 elif use_classifier == 'GaussianNB':
@@ -139,16 +146,6 @@ elif use_classifier == 'AdaBoost':
 				  'random_state': range(2)}
 	clf = GridSearchCV(svr, parameters)
 
-elif use_classifier == 'LogReg':
-	from sklearn.linear_model import LogisticRegression
-	svr = LogisticRegression()
-	parameters = {'penalty': ['l1','l2'],
-				  'C':[0.1, 0.25, 0.5, 0.75, 1.0],
-				  'random_state': range(2),
-				  'class_weight':['balanced', None],
-				  'fit_intercept':[True, False]}
-	clf = GridSearchCV(svr, parameters)
-
 elif use_classifier == 'GradBoost':
 	from sklearn.ensemble import GradientBoostingClassifier
 	svr = GradientBoostingClassifier()
@@ -171,7 +168,7 @@ elif use_classifier == 'Voting':
 	from sklearn.tree import DecisionTreeClassifier
 	from sklearn.linear_model import LogisticRegression
 	from sklearn.ensemble import GradientBoostingClassifier
-	clf1 = SVC(random_state=1)
+	#clf1 = LinearSVC(random_state=1)
 	clf2 = RandomForestClassifier(bootstrap = False,
 								  n_estimators = 20,
 								  random_state = 0,
@@ -202,32 +199,33 @@ elif use_classifier == 'Voting':
 									  random_state = 1,
 									  max_features = 'sqrt',
 									  max_depth = 4)
-	clf = VotingClassifier(estimators=[('sv', clf1), ('rf', clf2),
+	clf = VotingClassifier(estimators=[('rf', clf2),
 							           ('ab', clf3), ('knn', clf4),
 									   ('gnb',clf5), ('dt', clf6),
 									   ('gb', clf7)],
 						   voting='hard')
 	
-### Task 5: Tune your classifier to achieve better than .3 precision and recall 
-### using our testing script. Check the tester.py script in the final project
-### folder for details on the evaluation method, especially the test_classifier
-### function. Because of the small size of the dataset, the script uses
-### stratified shuffle split cross validation. For more info: 
-### http://scikit-learn.org/stable/modules/generated/sklearn.cross_validation.StratifiedShuffleSplit.html
+
 
 # Example starting point. Try investigating other evaluation techniques!
 from sklearn.cross_validation import train_test_split
 features_train, features_test, labels_train, labels_test = \
     train_test_split(features, labels, test_size=0.3, random_state=42)
-
+# from sklearn.feature_selection import SelectKBest
+# from sklearn.feature_selection import f_classif
+# selector = SelectKBest(f_classif, k = 'all')
+# selector.fit_transform(features_train, labels_train)
+# print selector.scores_
+# print selector.pvalues_
 
 clf.fit(features_train, labels_train)
 print clf.score(features_test, labels_test)
 
-
+### Pass the optimized version of the classifier to tester
 if use_classifier == 'Tree':
 	print clf.best_params_
 	best = clf.best_params_
+	
 	clf = DecisionTreeClassifier(presort = best['presort'],
 							 splitter = best['splitter'],
 							 criterion = best['criterion'],
@@ -236,14 +234,21 @@ if use_classifier == 'Tree':
 							 class_weight = best['class_weight'],
 							 random_state = best['random_state'],
 							 min_samples_leaf = best['min_samples_leaf'])
+	clf.fit(features_train, labels_train)
+	features = sorted(zip(features_list[1:],clf.feature_importances_), key = lambda x: x[1])
+	pprint.pprint(features)
 							 
 elif use_classifier == 'SVC':
 	print clf.best_params_
 	best = clf.best_params_
-	clf = SVC(kernel = best['kernel'],
-			  C = best['C'],
-			  degree = best['degree'],
-			  gamma = best['gamma'])
+	clf = LinearSVC( C = best['C'],
+					 penalty = best['penalty'],
+					 dual = best['dual'],
+					 fit_intercept = best['fit_intercept'],
+					 class_weight = best['class_weight'],
+					 random_state = best['random_state'],
+					 max_iter = best['max_iter'])
+	
 			  
 elif use_classifier == "Neighbor":
 	print clf.best_params_
@@ -263,21 +268,20 @@ elif use_classifier == 'RForest':
 								 max_features = best['max_features'],
 								 max_depth = best['max_depth'],
 								 bootstrap = best['bootstrap'])
+	clf.fit(features_train, labels_train)
+	features = sorted(zip(features_list[1:],clf.feature_importances_), key = lambda x: x[1])
+	pprint.pprint(features)
+								 
 elif use_classifier == 'AdaBoost':
 	print clf.best_params_
 	best = clf.best_params_
 	clf = AdaBoostClassifier(algorithm = best['algorithm'],
 							 n_estimators = best['n_estimators'],
 							 random_state = best['random_state'])
-							 
-elif use_classifier == 'LogReg':
-	print clf.best_params_
-	best = clf.best_params_
-	clf = LogisticRegression(penalty = best['penalty'],
-							 C = best['C'],
-							 random_state = best['random_state'],
-							 class_weight = best['class_weight'],
-							 fit_intercept = best['fit_intercept'])
+	clf.fit(features_train, labels_train)
+	features = sorted(zip(features_list[1:],clf.feature_importances_), key = lambda x: x[1])
+	pprint.pprint(features)
+							
 							 
 elif use_classifier == 'Voting':
 	pass;
@@ -292,6 +296,9 @@ elif use_classifier == 'GradBoost':
 									 max_features = best['max_features'],
 									 random_state = best['random_state'],
 									 presort = best['presort'])
+	clf.fit(features_train, labels_train)
+	features = sorted(zip(features_list[1:],clf.feature_importances_), key = lambda x: x[1])
+	pprint.pprint(features)
 
 ### Task 6: Dump your classifier, dataset, and features_list so anyone can
 ### check your results. You do not need to change anything below, but make sure
