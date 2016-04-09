@@ -5,6 +5,8 @@ import pprint
 sys.path.append("../tools/")
 from feature_format import featureFormat, targetFeatureSplit
 from tester import dump_classifier_and_data
+
+### Complete list of features
 features_list = ['poi', 'bonus', 'ratio', 'ratio_from_to',
  'deferral_payments',
  'deferred_income',
@@ -23,7 +25,8 @@ features_list = ['poi', 'bonus', 'ratio', 'ratio_from_to',
  'shared_receipt_with_poi',
  'to_messages',
  'total_payments',
- 'total_stock_value']	
+ 'total_stock_value']
+ 
 ### Task 1: Select what features you'll use.
 ### features_list is a list of strings, each of which is a feature name.
 ### The first feature must be "poi".
@@ -36,7 +39,6 @@ with open("final_project_dataset.pkl", "r") as data_file:
     data_dict = pickle.load(data_file)
 
 ### Task 2: Remove outliers
-
 # Total and Travel Agency are not people
 # Lockhart had no values in any column
 data_dict.pop('TOTAL', 0)
@@ -85,7 +87,7 @@ labels, features = targetFeatureSplit(data)
 from sklearn.grid_search import GridSearchCV
 ### use_classifier can be 'GaussianNB', 'Tree', 'SVC', 'Neighbor', 'RForest',
 ### 'AdaBoost', 'Voting', 'GradBoost'
-use_classifier = 'RForest'
+use_classifier = 'Voting'
 
 if use_classifier == 'Tree':
 	from sklearn.tree import DecisionTreeClassifier
@@ -100,17 +102,7 @@ if use_classifier == 'Tree':
 			  'min_samples_leaf': (1,2)}
 	clf = GridSearchCV(svr, parameters)
 	
-elif use_classifier == 'SVC':
-	from sklearn.svm import LinearSVC
-	parameters = {'C':[1, 10, 25, 50, 100],
-				  'penalty':['l2'],
-				  'dual':[True, False],
-				  'fit_intercept':[True, False],
-				  'class_weight':['balanced', None],
-				  'random_state': range(2),
-				  'max_iter':[1000,10000,100000]}
-	svr = LinearSVC()
-	clf = GridSearchCV(svr, parameters)
+
 	
 elif use_classifier == 'GaussianNB':
 	from sklearn.naive_bayes import GaussianNB
@@ -160,15 +152,12 @@ elif use_classifier == 'GradBoost':
 	
 elif use_classifier == 'Voting':
 	from sklearn.ensemble import VotingClassifier
-	from sklearn.svm import SVC
 	from sklearn.ensemble import RandomForestClassifier
 	from sklearn.ensemble import AdaBoostClassifier
 	from sklearn.neighbors import KNeighborsClassifier
 	from sklearn.naive_bayes import GaussianNB
 	from sklearn.tree import DecisionTreeClassifier
-	from sklearn.linear_model import LogisticRegression
 	from sklearn.ensemble import GradientBoostingClassifier
-	#clf1 = LinearSVC(random_state=1)
 	clf2 = RandomForestClassifier(bootstrap = False,
 								  n_estimators = 20,
 								  random_state = 0,
@@ -238,16 +227,6 @@ if use_classifier == 'Tree':
 	features = sorted(zip(features_list[1:],clf.feature_importances_), key = lambda x: x[1])
 	pprint.pprint(features)
 							 
-elif use_classifier == 'SVC':
-	print clf.best_params_
-	best = clf.best_params_
-	clf = LinearSVC( C = best['C'],
-					 penalty = best['penalty'],
-					 dual = best['dual'],
-					 fit_intercept = best['fit_intercept'],
-					 class_weight = best['class_weight'],
-					 random_state = best['random_state'],
-					 max_iter = best['max_iter'])
 	
 			  
 elif use_classifier == "Neighbor":
