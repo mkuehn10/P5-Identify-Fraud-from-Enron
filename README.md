@@ -430,8 +430,8 @@ The evaluation metrics I used to assess performance were accuracy, precision, an
 
 The VotingClassifier algorithm was more precise than any of the other
 algorithms meaning that there is more confidence that someone is a POI if
-the alogithm identifies that person as a POI.  The algorithm predicted a total of 1108 POIs of which 681 were actually POIs. This is where the precision of 0.61 comes from.  The recall was similar to all
-of the individual models and is somewhat low.  Out of the actual 2000 POIs in the data, the algoirthm was only able to identify 681 which is where the recall of 0.34 comes from.  Overall, the algorithm does not
+the algorithm identifies that person as a POI.  The algorithm predicted a total of 1108 POIs of which 681 were actually POIs. This is where the precision of 0.61 comes from.  The recall was similar to all
+of the individual models and is somewhat low.  Out of the actual 2000 POIs in the data, the algorithm was only able to identify 681 which is where the recall of 0.34 comes from.  Overall, the algorithm does not
 do a good job of picking out the POIs from the data.
 
 The overall accuracy of the model comes from the number of true positives and true negatives that were correctly identified.  In this case, 11254 out of the 13000 data points were correctly identified.
